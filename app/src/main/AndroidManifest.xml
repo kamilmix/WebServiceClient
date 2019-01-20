@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".GetActivity" />
-        <activity android:name=".DeleteActivity"></activity>
+        <activity android:name=".DeleteActivity" />
+        <activity android:name=".PostActivity"></activity>
     </application>
 
 </manifest>

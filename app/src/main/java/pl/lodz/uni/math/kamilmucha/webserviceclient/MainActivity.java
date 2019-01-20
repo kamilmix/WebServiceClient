@@ -20,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
         Button buttonDeleteActivity = findViewById(R.id.buttonDeleteActivity);
         buttonDeleteActivity.setOnClickListener(buttonDeleteActivityOnClickListener);
 
+        Button buttonPostActivity = findViewById(R.id.buttonPostActivity);
+        buttonPostActivity.setOnClickListener(buttonPostActivityOnClickListener);
+
     }
 
     private View.OnClickListener buttonGetOnClickListener = new View.OnClickListener() {
@@ -43,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void buttonDeleteActivityClicked() {
         Intent intent = new Intent(this, DeleteActivity.class);
+        startActivity(intent);
+    }
+
+    private View.OnClickListener buttonPostActivityOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            buttonPostActivityClicked();
+        }
+    };
+
+    private void buttonPostActivityClicked() {
+        Intent intent = new Intent(this, PostActivity.class);
         startActivity(intent);
     }
 

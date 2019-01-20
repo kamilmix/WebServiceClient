@@ -46,9 +46,9 @@ public class DeleteActivity extends AppCompatActivity {
         protected Integer doInBackground(Void... voids) {
             try {
                 URL restApiEndpoint = new URL(MainActivity.API_URL + editTextNumberToDelete.getText().toString());
-                HttpsURLConnection myConnection = (HttpsURLConnection) restApiEndpoint.openConnection();
-                myConnection.setRequestMethod("DELETE");
-                return myConnection.getResponseCode();
+                HttpsURLConnection httpsURLConnection = (HttpsURLConnection) restApiEndpoint.openConnection();
+                httpsURLConnection.setRequestMethod("DELETE");
+                return httpsURLConnection.getResponseCode();
 
             } catch (Exception e) {
                 Toast.makeText(DeleteActivity.this, "Error", Toast.LENGTH_SHORT).show();
