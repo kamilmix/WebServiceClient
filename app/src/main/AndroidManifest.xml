@@ -19,7 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GETActivity"></activity>
+        <activity android:name=".GetActivity" />
+        <activity android:name=".DeleteActivity"></activity>
     </application>
 
 </manifest>

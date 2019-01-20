@@ -8,6 +8,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
+    public final static String API_URL="https://jsonplaceholder.typicode.com/posts/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,6 +16,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button buttonGET = findViewById(R.id.buttonGET);
         buttonGET.setOnClickListener(buttonGetOnClickListener);
+
+        Button buttonDeleteActivity = findViewById(R.id.buttonDeleteActivity);
+        buttonDeleteActivity.setOnClickListener(buttonDeleteActivityOnClickListener);
 
     }
 
@@ -26,7 +30,20 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void buttonGETClicked() {
-        Intent intent = new Intent(this, GETActivity.class);
+        Intent intent = new Intent(this, GetActivity.class);
         startActivity(intent);
     }
+
+    private View.OnClickListener buttonDeleteActivityOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            buttonDeleteActivityClicked();
+        }
+    };
+
+    private void buttonDeleteActivityClicked() {
+        Intent intent = new Intent(this, DeleteActivity.class);
+        startActivity(intent);
+    }
+
 }

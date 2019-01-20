@@ -4,22 +4,21 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.JsonReader;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class GETActivity extends AppCompatActivity {
+public class GetActivity extends AppCompatActivity {
+
 
     private EditText editText;
     private TextView textViewTitle;
@@ -32,7 +31,7 @@ public class GETActivity extends AppCompatActivity {
         setContentView(R.layout.activity_get);
         Button buttonGetData = findViewById(R.id.buttonGETdata);
         buttonGetData.setOnClickListener(buttonGetDataOnClickListener);
-        editText = findViewById(R.id.editText);
+        editText = findViewById(R.id.editText2);
         textViewTitle = findViewById(R.id.textViewTitle);
         textViewBody = findViewById(R.id.textViewBody);
     }
@@ -52,16 +51,17 @@ public class GETActivity extends AppCompatActivity {
             public void run() {
 
                 try {
-                    URL restApiEndpoint = new URL("https://jsonplaceholder.typicode.com/posts/1");
+                    URL restApiEndpoint = new URL( MainActivity.API_URL + editText.getText().toString());
                     HttpsURLConnection myConnection = (HttpsURLConnection) restApiEndpoint.openConnection();
                     if(myConnection.getResponseCode() == 200){
                         InputStream responseBody = myConnection.getInputStream();
                         InputStreamReader responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
-                        wypelnij(responseBodyReader);
+                        fillTextViews(responseBodyReader);
                         myConnection.disconnect();
                     }
 
                 } catch (Exception e) {
+                    Toast.makeText(GetActivity.this, "Error", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
 
@@ -69,7 +69,7 @@ public class GETActivity extends AppCompatActivity {
         });
     }
 
-    private void wypelnij(InputStreamReader responseBodyReader) throws IOException {
+    private void fillTextViews(InputStreamReader responseBodyReader) throws IOException {
         JsonReader jsonReader = new JsonReader(responseBodyReader);
         jsonReader.beginObject();
 
