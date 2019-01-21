@@ -6,12 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -19,6 +15,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class DeleteActivity extends AppCompatActivity {
 
     private EditText editTextNumberToDelete;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +24,8 @@ public class DeleteActivity extends AppCompatActivity {
         editTextNumberToDelete = findViewById(R.id.editTextNumbetToDelete);
         Button buttonDeleteData = findViewById(R.id.buttonDeleteData);
         buttonDeleteData.setOnClickListener(buttonDeleteDataOnClickListener);
+
+        progressBar = findViewById(R.id.progressBarOnDelete);
     }
 
     private View.OnClickListener buttonDeleteDataOnClickListener = new View.OnClickListener() {
@@ -37,10 +36,22 @@ public class DeleteActivity extends AppCompatActivity {
     };
 
     private void buttonDeleteDataClicked() {
-        new DeleteTask().execute();
+        if(ConnectivityHelper.isConnectedToNetwork(this)){
+            new DeleteTask().execute();
+        }
+        else{
+            Toast.makeText(DeleteActivity.this, "Check network status", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private class DeleteTask extends AsyncTask<Void, Void, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected Integer doInBackground(Void... voids) {
@@ -64,6 +75,7 @@ public class DeleteActivity extends AppCompatActivity {
             } else {
                 onDeleteFail();
             }
+            progressBar.setVisibility(View.GONE);
 
         }
     }

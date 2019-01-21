@@ -3,14 +3,13 @@ package pl.lodz.uni.math.kamilmucha.webserviceclient;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.IOException;
+import org.json.JSONObject;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -22,8 +21,8 @@ public class GetActivity extends AppCompatActivity {
 
     private EditText editText;
     private TextView textViewTitle;
-    HttpsURLConnection myConnection;
     private TextView textViewBody;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +33,7 @@ public class GetActivity extends AppCompatActivity {
         editText = findViewById(R.id.editText2);
         textViewTitle = findViewById(R.id.textViewTitle);
         textViewBody = findViewById(R.id.textViewBody);
+        progressBar = findViewById(R.id.progressBarOnGet);
     }
 
 
@@ -46,49 +46,64 @@ public class GetActivity extends AppCompatActivity {
 
 
     private void buttonGetDataClicked() {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
+        if (ConnectivityHelper.isConnectedToNetwork(this)) {
+            new GetTask().execute();
+        } else {
+            Toast.makeText(GetActivity.this, "Check network status", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-                try {
-                    URL restApiEndpoint = new URL( MainActivity.API_URL + editText.getText().toString());
-                    HttpsURLConnection myConnection = (HttpsURLConnection) restApiEndpoint.openConnection();
-                    if(myConnection.getResponseCode() == 200){
-                        InputStream responseBody = myConnection.getInputStream();
-                        InputStreamReader responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
-                        fillTextViews(responseBodyReader);
-                        myConnection.disconnect();
+    private class GetTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            StringBuilder stringBuilder = new StringBuilder();
+            HttpsURLConnection httpsURLConnection = null;
+            try {
+                URL restApiEndpoint = new URL(MainActivity.API_URL + editText.getText().toString());
+                httpsURLConnection = (HttpsURLConnection) restApiEndpoint.openConnection();
+
+                if (httpsURLConnection.getResponseCode() == 200) {
+                    InputStream responseBody = httpsURLConnection.getInputStream();
+                    InputStreamReader responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
+                    int data = responseBodyReader.read();
+                    while (data != -1) {
+                        stringBuilder.append((char) data);
+                        data = responseBodyReader.read();
                     }
-
-                } catch (Exception e) {
-                    Toast.makeText(GetActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
+                    return stringBuilder.toString();
                 }
 
+            } catch (Exception e) {
+                Toast.makeText(GetActivity.this, "Error", Toast.LENGTH_SHORT).show();
+            } finally {
+                if (httpsURLConnection != null) {
+                    httpsURLConnection.disconnect();
+                }
             }
-        });
-    }
-
-    private void fillTextViews(InputStreamReader responseBodyReader) throws IOException {
-        JsonReader jsonReader = new JsonReader(responseBodyReader);
-        jsonReader.beginObject();
-
-        while(jsonReader.hasNext()){
-            String key = jsonReader.nextName();
-
-           // Log.d("ABC", value);
-            if(key.equals("title")){
-                String value = "TITLE: " + jsonReader.nextString();
-                textViewTitle.setText(value);
-            }
-            else if(key.equals("body")){
-                String value = jsonReader.nextString();
-                textViewBody.setText(value);
-            }
-            else {
-                jsonReader.skipValue();
-            }
+            return stringBuilder.toString();
         }
-        jsonReader.close();
+
+        @Override
+        protected void onPostExecute(String dataFromGet) {
+            try {
+                JSONObject jsonObject = new JSONObject(dataFromGet);
+                String title = "TITLE: " + jsonObject.getString("title");
+                textViewTitle.setText(title);
+                String body = jsonObject.getString("body");
+                textViewBody.setText(body);
+
+            } catch (Exception e) {
+                Toast.makeText(GetActivity.this, "Error", Toast.LENGTH_SHORT).show();
+            }
+            progressBar.setVisibility(View.GONE);
+        }
     }
+
 }

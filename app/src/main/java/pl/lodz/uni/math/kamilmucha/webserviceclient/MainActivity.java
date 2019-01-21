@@ -14,15 +14,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Button buttonGET = findViewById(R.id.buttonGET);
         buttonGET.setOnClickListener(buttonGetOnClickListener);
-
-        Button buttonDeleteActivity = findViewById(R.id.buttonDeleteActivity);
-        buttonDeleteActivity.setOnClickListener(buttonDeleteActivityOnClickListener);
 
         Button buttonPostActivity = findViewById(R.id.buttonPostActivity);
         buttonPostActivity.setOnClickListener(buttonPostActivityOnClickListener);
 
+        Button buttonPutActivity = findViewById(R.id.buttonPut);
+        buttonPutActivity.setOnClickListener(buttonPutActivityOnClickListener);
+
+        Button buttonDeleteActivity = findViewById(R.id.buttonDeleteActivity);
+        buttonDeleteActivity.setOnClickListener(buttonDeleteActivityOnClickListener);
     }
 
     private View.OnClickListener buttonGetOnClickListener = new View.OnClickListener() {
@@ -34,6 +37,30 @@ public class MainActivity extends AppCompatActivity {
 
     private void buttonGETClicked() {
         Intent intent = new Intent(this, GetActivity.class);
+        startActivity(intent);
+    }
+
+    private View.OnClickListener buttonPostActivityOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            buttonPostActivityClicked();
+        }
+    };
+
+    private void buttonPostActivityClicked() {
+        Intent intent = new Intent(this, PostActivity.class);
+        startActivity(intent);
+    }
+
+    private View.OnClickListener buttonPutActivityOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            buttonPutActivityClicked();
+        }
+    };
+
+    private void buttonPutActivityClicked() {
+        Intent intent = new Intent(this, PutActivity.class);
         startActivity(intent);
     }
 
@@ -49,16 +76,5 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private View.OnClickListener buttonPostActivityOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            buttonPostActivityClicked();
-        }
-    };
-
-    private void buttonPostActivityClicked() {
-        Intent intent = new Intent(this, PostActivity.class);
-        startActivity(intent);
-    }
 
 }

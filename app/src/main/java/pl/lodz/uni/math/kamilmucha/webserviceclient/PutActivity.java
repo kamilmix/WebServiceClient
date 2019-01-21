@@ -3,6 +3,7 @@ package pl.lodz.uni.math.kamilmucha.webserviceclient;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,43 +18,44 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class PostActivity extends AppCompatActivity {
-
+public class PutActivity extends AppCompatActivity {
     private EditText editTextTitle;
     private EditText editTextBody;
     private EditText editTextUserId;
+    private EditText editTextID;
     private ProgressBar progressBar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post);
+        setContentView(R.layout.activity_put);
 
-        editTextTitle = findViewById(R.id.editTextTitle);
-        editTextBody = findViewById(R.id.editTextBody);
-        editTextUserId = findViewById(R.id.editTextUserIdToPost);
+        editTextTitle = findViewById(R.id.editTextTitleToPut);
+        editTextBody = findViewById(R.id.editTextBodyToPut);
+        editTextUserId = findViewById(R.id.editTextUserIdToPut);
+        editTextID = findViewById(R.id.editTextIdToPut);
 
-        Button buttonPostData = findViewById(R.id.buttonPostData);
-        buttonPostData.setOnClickListener(buttonPostDataOnClickListener);
+        Button buttonPutData = findViewById(R.id.buttonPutData);
+        buttonPutData.setOnClickListener(buttonPutDataOnClickListener);
 
-        progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBarToPut);
 
     }
 
-    private View.OnClickListener buttonPostDataOnClickListener = new View.OnClickListener() {
+    private View.OnClickListener buttonPutDataOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            buttonPostDataClicked();
+            buttonPutDataClicked();
         }
     };
 
-    private void buttonPostDataClicked() {
-       if(isEditTextsEmpties()){
+    private void buttonPutDataClicked() {
+        if(isEditTextsEmpties()){
             showShortToast("Please input all values");
         } else {
             if(ConnectivityHelper.isConnectedToNetwork(this)) {
-                new PostTask().execute();
+                new PutActivity.PutTask().execute();
             } else{
                 showShortToast("Check network status");
             }
@@ -61,15 +63,15 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void showShortToast(String text) {
-        Toast.makeText(PostActivity.this, text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(PutActivity.this, text, Toast.LENGTH_SHORT).show();
     }
 
     private boolean isEditTextsEmpties() {
-        return(editTextUserId.getText().toString().isEmpty() || editTextTitle.getText().toString().isEmpty() || editTextBody.getText().toString().isEmpty());
-
+        return (editTextUserId.getText().toString().isEmpty() || editTextTitle.getText().toString().isEmpty()
+                || editTextBody.getText().toString().isEmpty() || editTextID.getText().toString().isEmpty());
     }
 
-    private class PostTask extends AsyncTask<Void, Void, Integer> {
+    private class PutTask extends AsyncTask<Void, Void, Integer> {
 
         @Override
         protected void onPreExecute() {
@@ -80,10 +82,11 @@ public class PostActivity extends AppCompatActivity {
         @Override
         protected Integer doInBackground(Void... voids) {
             try {
-                URL restApiEndpoint = new URL(MainActivity.API_URL);
+                URL restApiEndpoint = new URL(MainActivity.API_URL + editTextID.getText().toString());
                 HttpsURLConnection httpsURLConnection = (HttpsURLConnection) restApiEndpoint.openConnection();
-                httpsURLConnection.setRequestMethod("POST");
+                httpsURLConnection.setRequestMethod("PUT");
                 Map<String, String> data = new HashMap<>();
+                data.put("id", editTextID.getText().toString());
                 data.put("title", editTextTitle.getText().toString());
                 data.put("body", editTextBody.getText().toString());
                 data.put("userId", editTextUserId.getText().toString());
@@ -101,7 +104,8 @@ public class PostActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Integer responseCode) {
-            if (responseCode == 201) {
+          Log.d("PutActivity", responseCode.toString());
+            if (responseCode == 200) {
                 onPostSuccessful();
             } else {
                 onPostFail();
@@ -112,13 +116,14 @@ public class PostActivity extends AppCompatActivity {
 
 
     private void onPostSuccessful() {
-        showShortToast("Data added successfully!");
+        showShortToast("Data updated successfully!");
         editTextTitle.setText("");
         editTextBody.setText("");
         editTextUserId.setText("");
+        editTextID.setText("");
     }
 
     private void onPostFail() {
-        showShortToast("Data not added, fail!");
+        showShortToast("Data not updated, fail!");
     }
 }
